@@ -5,6 +5,34 @@ BASE_EPIDEMIOLOGICAL_URL = 'https://raw.githubusercontent.com/CSSEGISandData/COV
 BASE_RESTRICTIONS_URL = 'https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/OxCGRT_latest.csv'
 BASE_POPULATION_URL = 'https://raw.githubusercontent.com/datasets/population/master/data/population.csv'
 
+COLUMNS_MAP = {
+    'Active': 'active',
+    'Deaths': 'deaths',
+    'Confirmed': 'confirmed',
+    'Recovered': 'recovered',
+    'CountryCode': 'country_code',
+    'Population': 'population',
+    'C1_School closing': 'school_closing',
+    'C2_Workplace closing': 'workplace_closing',
+    'C3_Cancel public events': 'cancel_public_events',
+    'C4_Restrictions on gatherings': 'gathering_restrictions',
+    'C5_Close public transport': 'close_public_transport',
+    'C6_Stay at home requirements': 'stay_at_home',
+    'C7_Restrictions on internal movement': 'internal_movement_restrictions',
+    'C8_International travel controls': 'international_travel_restrictions',
+    'E4_International support': 'international_support',
+    'H1_Public information campaigns': 'public_campaigns',
+    'H2_Testing policy': 'testing_policy',
+    'H3_Contact tracing': 'contact_tracing',
+    'H5_Investment in vaccines': 'vaccines_investment',
+    'H6_Facial Coverings': 'facial_coverings',
+    'H7_Vaccination policy': 'vaccination_policy',
+    'StringencyIndex': 'stringency',
+    'GovernmentResponseIndex': 'government_response',
+    'ContainmentHealthIndex': 'containment_health',
+    'EconomicSupportIndex': 'economic_support',
+}
+
 EPIDEMIOLOGICAL_COLUMNS_TYPES = {
     'Active': 'float64',
     'Deaths': 'float64',

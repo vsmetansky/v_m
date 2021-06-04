@@ -50,7 +50,7 @@ def transform_epidemiological_data(df):
 
     df = df.assign(id_=df['CountryCode'] + df['timestamp'])
 
-    df = df.groupby('id_').agg(const.EPIDEMIOLOGICAL_AGGREGATIONS)
+    df = df.groupby('id_').agg(const.EPIDEMIOLOGICAL_AGGREGATIONS).reset_index()
 
     df['location'] = df['Lat'].astype(str).str.cat(df['Long_'].astype(str), sep=',')
     df = df.drop(['Lat', 'Long_'], axis=1)
@@ -66,7 +66,7 @@ def transform_restrictions_data(df):
 
     df = df.assign(id_=df['CountryCode'] + df['timestamp'])
 
-    df = df.groupby('id_').agg(const.RESTRICTIONS_AGGREGATIONS)
+    df = df.groupby('id_').agg(const.RESTRICTIONS_AGGREGATIONS).reset_index()
 
     return df
 
@@ -84,7 +84,8 @@ def transform_population_data(df):
 
 @task()
 def transform(e_df, r_df, p_df):
-    return dd.multi.concat(e_df).merge(r_df, how='outer').merge(p_df, how='outer', on='CountryCode').dropna()
+    return dd.multi.concat(e_df).merge(r_df, how='outer').merge(p_df, how='outer', on='CountryCode')\
+        .dropna().rename(columns=const.COLUMNS_MAP, )
 
 
 @task()

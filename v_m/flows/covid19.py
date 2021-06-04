@@ -17,8 +17,7 @@ with Flow('covid19', executor=LocalDaskExecutor()) as flow:
 
     df = tasks.transform(e_df, r_df, p_df)
 
-    _ = tasks.load(df)
+    tasks.load(df)
 
 if __name__ == '__main__':
     flow.run()
-    # flow.register(project_name='v_m')
