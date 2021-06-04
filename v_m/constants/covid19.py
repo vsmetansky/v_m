@@ -1,4 +1,7 @@
-BASE_EPIDEMIOLOGICAL_URL = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/{:02d}-{:02d}-{}.csv'
+INDEX_NAME = 'covid19'
+
+BASE_EPIDEMIOLOGICAL_URL = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data' \
+                           '/csse_covid_19_daily_reports/{:02d}-{:02d}-{}.csv'
 BASE_RESTRICTIONS_URL = 'https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/OxCGRT_latest.csv'
 BASE_POPULATION_URL = 'https://raw.githubusercontent.com/datasets/population/master/data/population.csv'
 
@@ -37,6 +40,43 @@ RESTRICTIONS_COLUMNS_TYPES = {
 POPULATION_COLUMNS_TYPES = {
     'Country Code': 'string',
     'Value': 'int64'
+}
+
+EPIDEMIOLOGICAL_AGGREGATIONS = {
+    'Active': 'sum',
+    'Deaths': 'sum',
+    'Confirmed': 'sum',
+    'Recovered': 'sum',
+    'CountryCode': 'last',
+    'Lat': 'mean',
+    'Long_': 'mean',
+    'timestamp': 'last'
+}
+RESTRICTIONS_AGGREGATIONS = {
+    'C1_School closing': 'mean',
+    'C2_Workplace closing': 'mean',
+    'C3_Cancel public events': 'mean',
+    'C4_Restrictions on gatherings': 'mean',
+    'C5_Close public transport': 'mean',
+    'C6_Stay at home requirements': 'mean',
+    'C7_Restrictions on internal movement': 'mean',
+    'C8_International travel controls': 'mean',
+    'E4_International support': 'mean',
+    'H1_Public information campaigns': 'mean',
+    'H2_Testing policy': 'mean',
+    'H3_Contact tracing': 'mean',
+    'H5_Investment in vaccines': 'mean',
+    'H6_Facial Coverings': 'mean',
+    'H7_Vaccination policy': 'mean',
+    'StringencyIndex': 'mean',
+    'GovernmentResponseIndex': 'mean',
+    'ContainmentHealthIndex': 'mean',
+    'EconomicSupportIndex': 'mean',
+    'CountryCode': 'last',
+    'timestamp': 'last'
+}
+POPULATION_AGGREGATIONS = {
+    'Population': 'last'
 }
 
 COUNTRY_CODES_MAP = {

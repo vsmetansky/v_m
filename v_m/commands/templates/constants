@@ -1,0 +1,4 @@
+INDEX_NAME = ''
+SOURCE_URL = ''
+
+COLUMNS_TYPES = dict()

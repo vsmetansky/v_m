@@ -1,12 +1,12 @@
 from prefect import task
 from dask import dataframe as dd
-
-from v_m.constants import covid19 as const
-
 import pandas as pd
 
+from v_m.constants import covid19 as const
+from v_m.commons.database import ElasticsearchConnector
 
-@task
+
+@task()
 def extract_epidemiological_data(timestamp):
     df = dd.read_csv(
         const.BASE_EPIDEMIOLOGICAL_URL.format(timestamp.month, timestamp.day, timestamp.year),
@@ -17,7 +17,7 @@ def extract_epidemiological_data(timestamp):
     return df.assign(timestamp=timestamp_iso)
 
 
-@task
+@task()
 def extract_restrictions_data(period):
     df = dd.from_pandas(pd.read_csv(
         const.BASE_RESTRICTIONS_URL,
@@ -32,7 +32,7 @@ def extract_restrictions_data(period):
     return df
 
 
-@task
+@task()
 def extract_population_data():
     return dd.read_csv(
         const.BASE_POPULATION_URL,
@@ -41,7 +41,7 @@ def extract_population_data():
     )
 
 
-@task
+@task()
 def transform_epidemiological_data(df):
     df = df.rename(columns={'Country_Region': 'CountryCode'})
 
@@ -50,16 +50,7 @@ def transform_epidemiological_data(df):
 
     df = df.assign(id_=df['CountryCode'] + df['timestamp'])
 
-    df = df.groupby('id_').agg({
-        'Active': 'sum',
-        'Deaths': 'sum',
-        'Confirmed': 'sum',
-        'Recovered': 'sum',
-        'CountryCode': 'last',
-        'Lat': 'mean',
-        'Long_': 'mean',
-        'timestamp': 'last'
-    })
+    df = df.groupby('id_').agg(const.EPIDEMIOLOGICAL_AGGREGATIONS)
 
     df['location'] = df['Lat'].astype(str).str.cat(df['Long_'].astype(str), sep=',')
     df = df.drop(['Lat', 'Long_'], axis=1)
@@ -67,7 +58,7 @@ def transform_epidemiological_data(df):
     return df
 
 
-@task
+@task()
 def transform_restrictions_data(df):
     df = df.fillna(method='pad')
 
@@ -75,51 +66,27 @@ def transform_restrictions_data(df):
 
     df = df.assign(id_=df['CountryCode'] + df['timestamp'])
 
-    df = df.groupby('id_').agg({
-        'C1_School closing': 'mean',
-        'C2_Workplace closing': 'mean',
-        'C3_Cancel public events': 'mean',
-        'C4_Restrictions on gatherings': 'mean',
-        'C5_Close public transport': 'mean',
-        'C6_Stay at home requirements': 'mean',
-        'C7_Restrictions on internal movement': 'mean',
-        'C8_International travel controls': 'mean',
-        'E4_International support': 'mean',
-        'H1_Public information campaigns': 'mean',
-        'H2_Testing policy': 'mean',
-        'H3_Contact tracing': 'mean',
-        'H5_Investment in vaccines': 'mean',
-        'H6_Facial Coverings': 'mean',
-        'H7_Vaccination policy': 'mean',
-        'StringencyIndex': 'mean',
-        'GovernmentResponseIndex': 'mean',
-        'ContainmentHealthIndex': 'mean',
-        'EconomicSupportIndex': 'mean',
-        'CountryCode': 'last',
-        'timestamp': 'last'
-    })
+    df = df.groupby('id_').agg(const.RESTRICTIONS_AGGREGATIONS)
 
     return df
 
 
-@task
+@task()
 def transform_population_data(df):
     df = df.rename(columns={'Country Code': 'CountryCode', 'Value': 'Population'})
 
     df = df[df['CountryCode'].isin(const.COUNTRY_CODES)]
 
-    df = df.groupby('CountryCode').agg({
-        'Population': 'last'
-    })
+    df = df.groupby('CountryCode').agg(const.POPULATION_AGGREGATIONS)
 
     return df
 
 
-@task
+@task()
 def transform(e_df, r_df, p_df):
-    return dd.multi.concat(e_df).merge(r_df, how='outer').merge(p_df, how='outer', on='CountryCode')
+    return dd.multi.concat(e_df).merge(r_df, how='outer').merge(p_df, how='outer', on='CountryCode').dropna()
 
 
-@task
+@task()
 def load(df):
-    print(df.head())
+    ElasticsearchConnector.dump(df, const.INDEX_NAME)
