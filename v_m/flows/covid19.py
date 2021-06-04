@@ -1,11 +1,12 @@
 import pandas as pd
-from prefect import Flow, Parameter
+from prefect import Flow, Parameter, task
 from prefect.executors import LocalDaskExecutor
 
 from v_m.tasks import covid19 as tasks
 
 with Flow('covid19', executor=LocalDaskExecutor()) as flow:
-    period = pd.date_range(*['2021-02-01', '2021-02-01'])
+    start, stop = Parameter('start', default='2021-02-01'), Parameter('stop', default='2021-02-01')
+    period = task()(lambda x, y: pd.date_range(*[x, y]))(start, stop)
 
     e_df = tasks.extract_epidemiological_data.map(period)
     r_df = tasks.extract_restrictions_data(period)

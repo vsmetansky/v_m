@@ -84,8 +84,8 @@ def transform_population_data(df):
 
 @task()
 def transform(e_df, r_df, p_df):
-    return dd.multi.concat(e_df).merge(r_df, how='outer').merge(p_df, how='outer', on='CountryCode')\
-        .dropna().rename(columns=const.COLUMNS_MAP, )
+    return dd.multi.concat(e_df).merge(r_df, how='outer').merge(p_df, how='outer', on='CountryCode') \
+        .dropna().rename(columns=const.COLUMNS_MAP)
 
 
 @task()
