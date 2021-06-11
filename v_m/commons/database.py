@@ -11,6 +11,7 @@ import v_m.settings as settings
 
 class ElasticsearchConnector:
     _es = Elasticsearch(
+        http_auth=(settings.ES_USER, settings.ES_PASS),
         hosts=settings.ES_HOST,
         maxsize=settings.ES_CONNECTIONS_MAX_NUM
     )
