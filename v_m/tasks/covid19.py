@@ -21,7 +21,7 @@ def process_parameters(start, stop):
 
 
 @task()
-def extract_epidemiological_data(timestamp):
+def extract_epidemiological(timestamp):
     df = dd.read_csv(
         const.BASE_EPIDEMIOLOGICAL_URL.format(timestamp.month, timestamp.day, timestamp.year),
         usecols=list(const.EPIDEMIOLOGICAL_COLUMNS_TYPES),
@@ -32,7 +32,7 @@ def extract_epidemiological_data(timestamp):
 
 
 @task()
-def extract_restrictions_data(period):
+def extract_restrictions(period):
     df = dd.from_pandas(pd.read_csv(
         const.BASE_RESTRICTIONS_URL,
         usecols=list(const.RESTRICTIONS_COLUMNS_TYPES),
@@ -47,7 +47,7 @@ def extract_restrictions_data(period):
 
 
 @task()
-def extract_population_data():
+def extract_population():
     return dd.read_csv(
         const.BASE_POPULATION_URL,
         usecols=list(const.POPULATION_COLUMNS_TYPES),
@@ -56,7 +56,7 @@ def extract_population_data():
 
 
 @task()
-def transform_epidemiological_data(df):
+def transform_epidemiological(df):
     df = df.rename(columns={'Country_Region': 'CountryCode'})
 
     df['CountryCode'] = df['CountryCode'].map(const.COUNTRY_CODES_MAP, meta=('CountryCode', 'string'))
@@ -73,7 +73,7 @@ def transform_epidemiological_data(df):
 
 
 @task()
-def transform_restrictions_data(df):
+def transform_restrictions(df):
     df = df.fillna(method='pad')
 
     df = df[df['CountryCode'].isin(const.COUNTRY_CODES)]
@@ -86,7 +86,7 @@ def transform_restrictions_data(df):
 
 
 @task()
-def transform_population_data(df):
+def transform_population(df):
     df = df.rename(columns={'Country Code': 'CountryCode', 'Value': 'Population'})
 
     df = df[df['CountryCode'].isin(const.COUNTRY_CODES)]

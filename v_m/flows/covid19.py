@@ -17,13 +17,13 @@ with Flow(
 ) as flow:
     date_range = tasks.process_parameters(start, stop)
 
-    e_df = tasks.extract_epidemiological_data.map(date_range)
-    r_df = tasks.extract_restrictions_data(date_range)
-    p_df = tasks.extract_population_data()
+    e_df = tasks.extract_epidemiological.map(date_range)
+    r_df = tasks.extract_restrictions(date_range)
+    p_df = tasks.extract_population()
 
-    e_df = tasks.transform_epidemiological_data.map(e_df)
-    r_df = tasks.transform_restrictions_data(r_df)
-    p_df = tasks.transform_population_data(p_df)
+    e_df = tasks.transform_epidemiological.map(e_df)
+    r_df = tasks.transform_restrictions(r_df)
+    p_df = tasks.transform_population(p_df)
 
     df = tasks.transform(e_df, r_df, p_df)
 
