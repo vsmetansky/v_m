@@ -19,7 +19,6 @@ def process_parameters(start, stop):
     except (TypeError, ValueError) as e:
         raise ValidationException(e)
     validate_date_range(start, stop)
-    print(date_to_year_week(start), date_to_year_week(stop))
     return f'{date_to_year_week(start)}-{date_to_year_week(stop)}'
 
 
