@@ -21,4 +21,4 @@ with Flow(
     tasks.load(df)
 
 if __name__ == '__main__':
-    flow.run()
+    flow.run(run_on_schedule=False)
