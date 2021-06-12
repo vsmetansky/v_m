@@ -1,34 +1,13 @@
-from datetime import datetime, timedelta
-
 from prefect import Flow
-from prefect.core.parameter import Parameter
 from prefect.executors import LocalDaskExecutor
-from prefect.schedules import Schedule
-from prefect.schedules.clocks import IntervalClock
 
+from v_m.flows import init_schedule, init_dates, init_date_parameters
 from v_m.tasks import flu_a as tasks
 from v_m.constants import flu_a as const
 
-
-datetime_now = datetime.utcnow()
-date_stop = datetime_now.date()
-date_start = date_stop - timedelta(weeks=const.WEEKS_LOOKBACK)
-date_stop_serializable = date_stop.isoformat()
-date_start_serializable = date_start.isoformat()
-
-start = Parameter(name='start', default=date_start_serializable)
-stop = Parameter(name='stop', default=date_stop_serializable)
-
-clock = IntervalClock(
-    start_date=datetime_now,
-    interval=timedelta(weeks=1),
-    parameter_defaults={
-        start.name: date_start_serializable,
-        stop.name: date_stop_serializable
-    }
-)
-
-schedule = Schedule(clocks=[clock])
+dates = init_dates(weeks=const.LOOKBACK)
+start, stop = init_date_parameters(dates)
+schedule = init_schedule(start, stop, dates, weeks=const.INTERVAL)
 executor = LocalDaskExecutor()
 
 with Flow(
