@@ -1,3 +1,3 @@
-from v_m.commands import cli
+from v_m import main
 
-cli()
+main()
