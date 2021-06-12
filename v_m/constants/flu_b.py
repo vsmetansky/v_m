@@ -9,5 +9,5 @@ STATE_CODES = {
     'nd', 'oh', 'ok', 'or', 'pa', 'ri', 'sc', 'sd', 'tn', 'tx', 'ut', 'vt', 'va', 'wa', 'wv', 'wi', 'wy'
 }
 
-LOOKBACK = 600
+LOOKBACK = 100
 INTERVAL = 1
