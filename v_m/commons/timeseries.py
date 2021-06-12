@@ -16,8 +16,7 @@ def iso_to_gregorian(iso_year, iso_week, iso_day):
 
 def year_week_to_date(x):
     year, week = int(str(x)[:4]), int(str(x)[-2:])
-    dt = iso_to_gregorian(year, week, 1)
-    return dt.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + 'Z'
+    return iso_to_gregorian(year, week, 1).isoformat()
 
 
 def date_to_year_week(date_: date) -> str:
