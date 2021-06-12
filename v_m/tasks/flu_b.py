@@ -23,8 +23,8 @@ def process_parameters(start, stop):
 
 
 @task()
-def extract(date_range):
-    url = const.BASE_URL.format(','.join(const.STATE_CODES), date_range)
+def extract_epidemiological(date_range):
+    url = const.BASE_EPIDEMIOLOGICAL_URL.format(','.join(const.STATE_CODES), date_range)
     response = requests.get(url)
     data = ujson.loads(response.text).get('epidata')
     if not data:
@@ -33,13 +33,37 @@ def extract(date_range):
 
 
 @task()
-def transform(df):
+def extract_population():
+    return dd.read_csv(const.BASE_POPULATION_URL)
+
+
+@task()
+def transform_epidemiological(df):
     if len(df.columns) == 0:
         return df
     df['timestamp'] = df.epiweek.map(year_week_to_date)
     df = df.drop(['issue', 'release_date'], axis=1)
-    df.region = 'US-' + df.location
+    df.location = 'US-' + df.location
     df['id_'] = df.location + df.timestamp
+
+    return df.reset_index(drop=True)
+
+
+@task()
+def transform_population(df):
+    df = df.rename(columns={'state/region': 'location'})
+    df = df.loc[df.location.str.lower().isin(const.STATE_CODES)]
+    df = df.loc[df.ages == 'total']
+    df.location = 'US-' + df.location
+    df = df.sort_values(by=['year'])
+    df = df.tail(len(const.STATE_CODES))
+    return df.drop(columns=['year', 'ages']).reset_index(drop=True)
+
+
+@task()
+def transform(e_df, p_df):
+    df = e_df.merge(p_df, how='outer', on='location').fillna(0)
+    df['num_patients'] = df.population * (df.rate_overall / 100)
     return df
 
 

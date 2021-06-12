@@ -16,8 +16,13 @@ with Flow(
         schedule=schedule
 ) as flow:
     date_range = tasks.process_parameters(start, stop)
-    df = tasks.extract(date_range)
-    df = tasks.transform(df)
+    e_df = tasks.extract_epidemiological(date_range)
+    p_df = tasks.extract_population()
+
+    e_df = tasks.transform_epidemiological(e_df)
+    p_df = tasks.transform_population(p_df)
+    df = tasks.transform(e_df, p_df)
+
     tasks.load(df)
 
 if __name__ == '__main__':
