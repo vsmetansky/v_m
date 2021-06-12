@@ -5,9 +5,9 @@ from v_m.flows import init_dates, init_date_parameters, init_schedule
 from v_m.tasks import covid19 as tasks
 from v_m.constants import covid19 as const
 
-dates = init_dates(weeks=const.LOOKBACK)
+dates = init_dates(days=const.LOOKBACK)
 start, stop = init_date_parameters(dates)
-schedule = init_schedule(start, stop, dates, weeks=const.INTERVAL)
+schedule = init_schedule(start, stop, dates, days=const.INTERVAL)
 executor = LocalDaskExecutor()
 
 with Flow(
@@ -30,4 +30,4 @@ with Flow(
     tasks.load(df)
 
 if __name__ == '__main__':
-    flow.run()
+    flow.run(run_on_schedule=False)
