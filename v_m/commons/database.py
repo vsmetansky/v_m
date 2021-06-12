@@ -18,6 +18,8 @@ class ElasticsearchConnector:
 
     @classmethod
     def dump(cls, df: dd.DataFrame, index_name: str):
+        if len(df.columns) == 0:
+            return
         documents = df.map_partitions(pd.DataFrame.to_dict, orient='records').to_delayed()
         db.from_delayed(documents).map_partitions(cls._dump, index_name).compute()
 
