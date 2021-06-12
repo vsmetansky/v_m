@@ -1,9 +1,23 @@
+from datetime import date
+
 from prefect import task
 from dask import dataframe as dd
 import pandas as pd
 
+from v_m.commons.validation import validate_date_range, ValidationException
 from v_m.constants import covid19 as const
 from v_m.commons.database import ElasticsearchConnector
+
+
+@task()
+def process_parameters(start, stop):
+    try:
+        validate_date_range(
+            date.fromisoformat(start), date.fromisoformat(stop)
+        )
+    except (TypeError, ValueError) as e:
+        raise ValidationException(e)
+    return pd.date_range(start, stop)
 
 
 @task()

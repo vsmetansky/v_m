@@ -297,3 +297,6 @@ COUNTRY_CODES_MAP = {
     "Zimbabwe": "ZWE"
 }
 COUNTRY_CODES = set(COUNTRY_CODES_MAP.values())
+
+INTERVAL = 1
+LOOKBACK = 30
